@@ -1,0 +1,18 @@
+{
+  "topics": [
+    {
+      "id": "science",
+      "file": "science.json",
+      "name": "Science & Research",
+      "nameCn": "科学与研究",
+      "wordCount": 50
+    },
+    {
+      "id": "technology",
+      "file": "technology.json",
+      "name": "Technology & Internet",
+      "nameCn": "科技与互联网",
+      "wordCount": 35
+    }
+  ]
+}

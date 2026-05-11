@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Vocabulary - CET-6 Listening</title>
+    <link rel="icon" href="favicon.ico">
+    <meta name="description" content="CET-6 listening vocabulary builder">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./static/css/vocab.css">
+
+    <script>
+        (function() {
+            var theme = document.cookie.match(/themeState=([^;]+)/);
+            if (theme && theme[1] === "Dark") {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <header class="vocab-header">
+            <a class="back-link" href="./index.html">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                </svg>
+                Back
+            </a>
+            <h1 class="vocab-title">CET-6 Vocabulary</h1>
+        </header>
+
+        <div class="topic-nav" id="topicNav">
+            <div class="topic-loading">Loading topics...</div>
+        </div>
+
+        <div class="controls" id="controls" style="display: none;">
+            <button class="ctrl-btn" id="playBtn" title="Play / Pause (Spacebar)">
+                <svg id="playIcon" viewBox="0 0 24 24" width="22" height="22">
+                    <path fill="currentColor" d="M8 5v14l11-7z"/>
+                </svg>
+                <svg id="pauseIcon" viewBox="0 0 24 24" width="22" height="22" style="display:none;">
+                    <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+            </button>
+            <button class="ctrl-btn" id="stopBtn" title="Stop / Reset">
+                <svg viewBox="0 0 24 24" width="22" height="22">
+                    <path fill="currentColor" d="M6 6h12v12H6z"/>
+                </svg>
+            </button>
+            <span class="ctrl-info" id="progressInfo"></span>
+        </div>
+
+        <div class="word-list" id="wordList">
+            <div class="word-placeholder">Select a topic to start</div>
+        </div>
+
+        <div class="speech-warning" id="speechWarning" style="display: none;">
+            Your browser does not support the Web Speech API. Playback is unavailable.
+        </div>
+    </div>
+
+    <script defer src="./static/js/vocab.js"></script>
+</body>
+
+</html>

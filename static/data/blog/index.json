@@ -1,0 +1,13 @@
+{
+  "posts": [
+    {
+      "id": "the-rising-sea",
+      "title": "轻松完成费力的事情",
+      "subtitle": "升海 · The Rising Sea",
+      "date": "2025-05-08",
+      "summary": "好的东西都是轻松完成的。不是攻克问题，而是让问题在更高的抽象层面自然消解。",
+      "tags": ["思考", "数学"],
+      "folder": "posts/the-rising-sea"
+    }
+  ]
+}
