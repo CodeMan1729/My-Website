@@ -1,0 +1,65 @@
+# === MIME Types ===
+AddType image/webp .webp
+AddType audio/mpeg .mp3
+AddType application/javascript .js
+AddType application/json .json
+
+# === Gzip Compression ===
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE application/xml
+</IfModule>
+
+# === Browser Caching ===
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Images: cache 30 days
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType image/x-icon "access plus 30 days"
+
+    # CSS/JS: cache 7 days
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType text/javascript "access plus 7 days"
+
+    # Audio: cache 30 days
+    ExpiresByType audio/mpeg "access plus 30 days"
+
+    # JSON data: cache 1 day
+    ExpiresByType application/json "access plus 1 day"
+
+    # HTML: cache 1 hour
+    ExpiresByType text/html "access plus 1 hour"
+</IfModule>
+
+# === Cache-Control Headers ===
+<IfModule mod_headers.c>
+    # Static assets: immutable for long cache
+    <FilesMatch "\.(webp|jpg|png|svg|ico|mp3|woff2?)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+
+    <FilesMatch "\.(html)$">
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# === ETags ===
+<IfModule mod_headers.c>
+    Header unset ETag
+</IfModule>
+FileETag None
