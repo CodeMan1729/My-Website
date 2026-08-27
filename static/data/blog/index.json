@@ -1,6 +1,15 @@
 {
   "posts": [
     {
+      "id": "python-decorator-lab",
+      "title": "亲眼看见 Python 装饰器在动",
+      "subtitle": "名字、函数对象、闭包与字典的引用关系可视化",
+      "date": "2026-07-11",
+      "summary": "把 @operation 这段代码逐步执行给你看：名字如何重新绑定到 wrapper、三个同名 wrapper 其实是三个不同对象、每个闭包各自持有哪个原函数、调用链和 return 怎样一路传值。",
+      "tags": ["Python", "可视化", "闭包"],
+      "folder": "posts/python-decorator-lab"
+    },
+    {
       "id": "the-rising-sea",
       "title": "轻松完成费力的事情",
       "subtitle": "升海 · The Rising Sea",

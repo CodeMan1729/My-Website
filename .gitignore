@@ -1,0 +1,19 @@
+# Claude Code local settings/skills - not part of the site
+.claude/
+
+# Windows junk / stray redirect artifacts
+nul
+Thumbs.db
+desktop.ini
+
+# Secrets / credentials
+.env
+.env.*
+*.key
+*.pem
+credentials*
+secrets*
+
+# OS / editor
+.DS_Store
+*.swp
