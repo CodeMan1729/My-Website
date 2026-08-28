@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>每日计划 - Xiyao Guo</title>
+<title>每日计划 - 2026-08-29</title>
 <link rel="icon" href="favicon.ico">
 <style>
   :root{
@@ -59,9 +59,9 @@
   #mainContent { display:none; }
   #mainContent.show { display:block; }
 
-  .wrap{max-width:700px; margin:0 auto;}
+  .wrap{max-width:760px; margin:0 auto;}
   header h1{font-size:24px; margin:0 0 4px;}
-  header .sub{color:var(--dim); font-size:13px; margin-bottom:24px;}
+  header .sub{color:var(--dim); font-size:13px;}
   header .back-link {
     display:inline-flex; align-items:center; gap:4px;
     margin-bottom:16px; padding:6px 12px;
@@ -72,37 +72,42 @@
   }
   header .back-link:hover { background:var(--border); color:var(--text); }
 
-  .plan-list {
-    display:flex; flex-direction:column; gap:12px;
+  .legend{display:flex; gap:16px; margin:16px 0 24px; font-size:12px; color:var(--dim); flex-wrap:wrap;}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .timeline{position:relative; padding-left:16px; border-left:2px solid var(--border);}
+  .task{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:16px 18px; margin-bottom:14px; position:relative;
   }
-
-  .plan-item {
-    display:block; text-decoration:none;
-    background:var(--card); border:1px solid var(--border);
-    border-radius:10px; padding:16px 20px;
-    transition:background 0.2s, border-color 0.2s, transform 0.2s;
-    border-left:3px solid transparent;
+  .task::before{
+    content:""; position:absolute; left:-25px; top:20px;
+    width:10px; height:10px; border-radius:50%; background:var(--dim);
   }
-  .plan-item:hover {
-    background:var(--border); border-left-color:var(--ok);
-    transform:translateX(4px);
-  }
-
-  .plan-date {
-    font-size:18px; font-weight:600; color:var(--text);
-    margin-bottom:6px;
-  }
-  .plan-summary {
-    font-size:13px; color:var(--dim); line-height:1.5;
-  }
-
-  footer{margin-top:32px; font-size:11px; color:var(--dim); text-align:center;}
+  .task.ok::before{background:var(--ok);}
+  .task.warn::before{background:var(--warn);}
+  .task.active::before{background:#4da3ff; box-shadow:0 0 0 4px rgba(77,163,255,0.2);}
+  .row1{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  .time{font-size:14px; font-weight:600; color:var(--dim); letter-spacing:0.5px;}
+  .badges{display:flex; gap:6px; flex-wrap:wrap;}
+  .badge{font-size:11px; padding:3px 9px; border-radius:999px; font-weight:600; white-space:nowrap;}
+  .badge.ok{background:rgba(61,220,132,0.15); color:var(--ok);}
+  .badge.warn{background:rgba(255,180,84,0.15); color:var(--warn);}
+  .badge.bad{background:rgba(255,95,95,0.15); color:var(--bad);}
+  .badge.active{background:rgba(77,163,255,0.15); color:#4da3ff;}
+  .title{font-size:17px; font-weight:600; margin:10px 0 6px;}
+  .notes{font-size:13px; color:var(--dim); line-height:1.6; white-space:pre-wrap;}
+  .todo{margin-top:10px; font-size:12px; color:var(--warn); border-top:1px dashed var(--border); padding-top:10px;}
+  footer{margin-top:24px; font-size:11px; color:var(--dim); text-align:center;}
 
   @media (max-width: 600px) {
     body { padding:16px 12px; }
+    .wrap { padding:0; }
     header h1 { font-size:20px; }
-    .plan-date { font-size:16px; }
-    .plan-summary { font-size:12px; }
+    .time { font-size:13px; }
+    .title { font-size:16px; }
+    .notes { font-size:12px; }
+    .badge { font-size:10px; padding:2px 7px; }
   }
 </style>
 </head>
@@ -122,26 +127,37 @@
 <div id="mainContent">
 <div class="wrap">
   <header>
-    <a class="back-link" href="./index.html">
+    <a class="back-link" href="./plan.html">
       <svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor">
         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
       </svg>
-      返回主页
+      返回计划列表
     </a>
-    <h1>每日计划</h1>
-    <div class="sub">记录每天的学习和工作安排</div>
+    <h1>2026-08-29 星期六</h1>
+    <div class="sub">每日战线记录</div>
   </header>
 
-  <div class="plan-list">
-    <a class="plan-item" href="./plan-2026-08-29.html">
-      <div class="plan-date">2026-08-29 星期六</div>
-      <div class="plan-summary">生成式软件工程课程学习</div>
-    </a>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--ok)"></span>已闭环</span>
+    <span><span class="dot" style="background:var(--warn)"></span>部分完成/待办</span>
+    <span><span class="dot" style="background:var(--bad)"></span>偏离计划</span>
+    <span><span class="dot" style="background:#4da3ff"></span>进行中</span>
+  </div>
 
-    <a class="plan-item" href="./plan-2026-08-28.html">
-      <div class="plan-date">2026-08-28 星期五</div>
-      <div class="plan-summary">考公战略复盘 · 申论真题实战 · 运动</div>
-    </a>
+  <div class="timeline" id="timeline">
+
+    <div class="task ok">
+      <div class="row1">
+        <div class="time">08:00 – 12:00</div>
+        <div class="badges">
+          <span class="badge ok">已完成</span>
+        </div>
+      </div>
+      <div class="title">蒋炎岩《生成式软件工程》课程学习</div>
+      <div class="notes">完成课程观看并做笔记。
+重点：理解 AI 辅助编程的核心思想、Prompt Engineering 在软件工程中的应用、以及如何利用生成式 AI 提升开发效率。</div>
+    </div>
+
   </div>
 
   <footer>此页面供家人了解我的日常安排和学习进度</footer>

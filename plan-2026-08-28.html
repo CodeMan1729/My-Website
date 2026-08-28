@@ -32,7 +32,8 @@
     border-radius:16px; padding:32px 28px; max-width:360px; width:90%;
     box-shadow:0 8px 32px rgba(0,0,0,0.4);
   }
-  .auth-box h2 { margin:0 0 24px; font-size:22px; text-align:center; }
+  .auth-box h2 { margin:0 0 8px; font-size:22px; text-align:center; }
+  .auth-box p { color:var(--dim); font-size:14px; margin:0 0 24px; text-align:center; line-height:1.5; }
   .auth-box input {
     width:100%; padding:12px 14px; font-size:15px;
     background:var(--bg); border:1px solid var(--border);
@@ -59,9 +60,9 @@
   #mainContent { display:none; }
   #mainContent.show { display:block; }
 
-  .wrap{max-width:700px; margin:0 auto;}
+  .wrap{max-width:760px; margin:0 auto;}
   header h1{font-size:24px; margin:0 0 4px;}
-  header .sub{color:var(--dim); font-size:13px; margin-bottom:24px;}
+  header .sub{color:var(--dim); font-size:13px;}
   header .back-link {
     display:inline-flex; align-items:center; gap:4px;
     margin-bottom:16px; padding:6px 12px;
@@ -72,37 +73,40 @@
   }
   header .back-link:hover { background:var(--border); color:var(--text); }
 
-  .plan-list {
-    display:flex; flex-direction:column; gap:12px;
+  .legend{display:flex; gap:16px; margin:16px 0 24px; font-size:12px; color:var(--dim); flex-wrap:wrap;}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .timeline{position:relative; padding-left:16px; border-left:2px solid var(--border);}
+  .task{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:16px 18px; margin-bottom:14px; position:relative;
   }
-
-  .plan-item {
-    display:block; text-decoration:none;
-    background:var(--card); border:1px solid var(--border);
-    border-radius:10px; padding:16px 20px;
-    transition:background 0.2s, border-color 0.2s, transform 0.2s;
-    border-left:3px solid transparent;
+  .task::before{
+    content:""; position:absolute; left:-25px; top:20px;
+    width:10px; height:10px; border-radius:50%; background:var(--dim);
   }
-  .plan-item:hover {
-    background:var(--border); border-left-color:var(--ok);
-    transform:translateX(4px);
-  }
-
-  .plan-date {
-    font-size:18px; font-weight:600; color:var(--text);
-    margin-bottom:6px;
-  }
-  .plan-summary {
-    font-size:13px; color:var(--dim); line-height:1.5;
-  }
-
-  footer{margin-top:32px; font-size:11px; color:var(--dim); text-align:center;}
+  .task.ok::before{background:var(--ok);}
+  .task.warn::before{background:var(--warn);}
+  .row1{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  .time{font-size:14px; font-weight:600; color:var(--dim); letter-spacing:0.5px;}
+  .badges{display:flex; gap:6px; flex-wrap:wrap;}
+  .badge{font-size:11px; padding:3px 9px; border-radius:999px; font-weight:600; white-space:nowrap;}
+  .badge.ok{background:rgba(61,220,132,0.15); color:var(--ok);}
+  .badge.warn{background:rgba(255,180,84,0.15); color:var(--warn);}
+  .badge.bad{background:rgba(255,95,95,0.15); color:var(--bad);}
+  .title{font-size:17px; font-weight:600; margin:10px 0 6px;}
+  .notes{font-size:13px; color:var(--dim); line-height:1.6; white-space:pre-wrap;}
+  .todo{margin-top:10px; font-size:12px; color:var(--warn); border-top:1px dashed var(--border); padding-top:10px;}
+  footer{margin-top:24px; font-size:11px; color:var(--dim); text-align:center;}
 
   @media (max-width: 600px) {
     body { padding:16px 12px; }
+    .wrap { padding:0; }
     header h1 { font-size:20px; }
-    .plan-date { font-size:16px; }
-    .plan-summary { font-size:12px; }
+    .time { font-size:13px; }
+    .title { font-size:16px; }
+    .notes { font-size:12px; }
+    .badge { font-size:10px; padding:2px 7px; }
   }
 </style>
 </head>
@@ -128,20 +132,56 @@
       </svg>
       返回主页
     </a>
-    <h1>每日计划</h1>
-    <div class="sub">记录每天的学习和工作安排</div>
+    <h1>2026-08-28 星期五</h1>
+    <div class="sub">每日战线记录 · 仅供家人查看</div>
   </header>
 
-  <div class="plan-list">
-    <a class="plan-item" href="./plan-2026-08-29.html">
-      <div class="plan-date">2026-08-29 星期六</div>
-      <div class="plan-summary">生成式软件工程课程学习</div>
-    </a>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--ok)"></span>已闭环</span>
+    <span><span class="dot" style="background:var(--warn)"></span>部分完成/待办</span>
+    <span><span class="dot" style="background:var(--bad)"></span>偏离计划</span>
+  </div>
 
-    <a class="plan-item" href="./plan-2026-08-28.html">
-      <div class="plan-date">2026-08-28 星期五</div>
-      <div class="plan-summary">考公战略复盘 · 申论真题实战 · 运动</div>
-    </a>
+  <div class="timeline" id="timeline">
+
+    <div class="task ok">
+      <div class="row1">
+        <div class="time">08:00 – 12:00</div>
+        <div class="badges">
+          <span class="badge ok">已完成</span>
+        </div>
+      </div>
+      <div class="title">考公战略复盘 + 面试题种草</div>
+      <div class="notes">系统反思申论学习方法（之前没接触过，需要建立完整的答题思维框架）；
+发现一道很有价值的面试题，已种草标记，计划后续深入研究并完整作答。
+重点：不是盲目刷题，而是先搞清楚"申论到底在考什么"、"答题的底层逻辑是什么"。</div>
+    </div>
+
+    <div class="task ok">
+      <div class="row1">
+        <div class="time">14:28 – 17:28（180分钟）</div>
+        <div class="badges">
+          <span class="badge ok">已完成</span>
+        </div>
+      </div>
+      <div class="title">申论真题实战：2020年新疆公务员录用考试《申论》（县区市及以上卷）</div>
+      <div class="notes">第一套申论卷，严格计时180分钟，一次性写完，不查资料、不中途暂停。
+目的：建立真实分数基准线 + 考试地图（哪里不会、主观题要求输出到什么程度）。
+内部参考分配：读材料审题40min / 小题70min / 大作文60min / 检查10min（不卡死，别让一块吃掉别的）。</div>
+      <div class="todo" style="color:var(--ok); border-color:var(--ok);">✅ <b>关键提醒</b>：申论题做完只是第一步。真正的分水岭在于<b>全方位复盘</b>——对照答案逐题分析思路差距、找出答题盲区、修正表达习惯、优化时间分配。复盘质量决定下一套的进步幅度，千万别以为"做完了"就结束了。</div>
+    </div>
+
+    <div class="task ok">
+      <div class="row1">
+        <div class="time">18:03 – 19:23（80分钟）</div>
+        <div class="badges">
+          <span class="badge ok">已完成</span>
+        </div>
+      </div>
+      <div class="title">运动</div>
+      <div class="notes">体能训练，保持身体状态。</div>
+    </div>
+
   </div>
 
   <footer>此页面供家人了解我的日常安排和学习进度</footer>
@@ -178,7 +218,7 @@ async function checkPassword() {
     document.getElementById('mainContent').classList.add('show');
     sessionStorage.setItem('planAuth', 'ok');
   } else {
-    error.textContent = '密码错误';
+    error.textContent = '密码错误，请重试';
     error.classList.add('show');
     input.value = '';
     input.focus();
