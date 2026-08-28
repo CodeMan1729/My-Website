@@ -327,8 +327,18 @@
     .star-name  { opacity: 0.5; font-size: 12px; }
     .star-desc  { display: none; }
     .star       { min-width: 44px; min-height: 44px; justify-content: center; }
-    .village-link { min-width: 44px; min-height: 44px; justify-content: center; }
-    .village-label { font-size: 11px; }
+    .village-link {
+        min-width: 56px;
+        min-height: 56px;
+        justify-content: center;
+        /* Increase touch target and add more spacing */
+        padding: 8px;
+    }
+    .village-label { font-size: 11px; margin-top: 8px; }
+    .village-glow {
+        width: 22px;
+        height: 16px;
+    }
     .intro-text { font-size: 11px; max-width: 200px; }
     .cypress-tag { display: none; }
 }
