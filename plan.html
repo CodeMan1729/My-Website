@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日计划 - Xiyao Guo</title>
+<link rel="icon" href="favicon.ico">
+<style>
+  :root{
+    --bg:#12141a; --card:#1c1f28; --border:#2a2e3a;
+    --text:#e8e9ed; --dim:#8b8f9c;
+    --ok:#3ddc84; --warn:#ffb454; --bad:#ff5f5f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:20px 16px; min-height:100vh;
+    background:var(--bg); color:var(--text);
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+
+  /* Password overlay */
+  #authOverlay {
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(10,10,20,0.98);
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter:blur(8px);
+  }
+  #authOverlay.hidden { display:none; }
+
+  .auth-box {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:32px 28px; max-width:360px; width:90%;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  }
+  .auth-box h2 { margin:0 0 8px; font-size:22px; text-align:center; }
+  .auth-box p { color:var(--dim); font-size:14px; margin:0 0 24px; text-align:center; line-height:1.5; }
+  .auth-box input {
+    width:100%; padding:12px 14px; font-size:15px;
+    background:var(--bg); border:1px solid var(--border);
+    border-radius:8px; color:var(--text); outline:none;
+    transition:border-color 0.2s;
+  }
+  .auth-box input:focus { border-color:var(--ok); }
+  .auth-box button {
+    width:100%; margin-top:16px; padding:12px;
+    background:var(--ok); border:none; border-radius:8px;
+    color:#fff; font-size:15px; font-weight:600; cursor:pointer;
+    transition:opacity 0.2s;
+  }
+  .auth-box button:hover { opacity:0.9; }
+  .auth-error {
+    margin-top:12px; padding:10px; background:rgba(255,95,95,0.15);
+    border:1px solid var(--bad); border-radius:6px;
+    color:var(--bad); font-size:13px; text-align:center;
+    display:none;
+  }
+  .auth-error.show { display:block; }
+
+  /* Main content */
+  #mainContent { display:none; }
+  #mainContent.show { display:block; }
+
+  .wrap{max-width:760px; margin:0 auto;}
+  header h1{font-size:24px; margin:0 0 4px;}
+  header .sub{color:var(--dim); font-size:13px;}
+  header .back-link {
+    display:inline-flex; align-items:center; gap:4px;
+    margin-bottom:16px; padding:6px 12px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:8px; color:var(--dim);
+    text-decoration:none; font-size:14px;
+    transition:background 0.2s, color 0.2s;
+  }
+  header .back-link:hover { background:var(--border); color:var(--text); }
+
+  .legend{display:flex; gap:16px; margin:16px 0 24px; font-size:12px; color:var(--dim); flex-wrap:wrap;}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .timeline{position:relative; padding-left:16px; border-left:2px solid var(--border);}
+  .task{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:16px 18px; margin-bottom:14px; position:relative;
+  }
+  .task::before{
+    content:""; position:absolute; left:-25px; top:20px;
+    width:10px; height:10px; border-radius:50%; background:var(--dim);
+  }
+  .task.ok::before{background:var(--ok);}
+  .task.warn::before{background:var(--warn);}
+  .row1{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  .time{font-size:14px; font-weight:600; color:var(--dim); letter-spacing:0.5px;}
+  .badges{display:flex; gap:6px; flex-wrap:wrap;}
+  .badge{font-size:11px; padding:3px 9px; border-radius:999px; font-weight:600; white-space:nowrap;}
+  .badge.ok{background:rgba(61,220,132,0.15); color:var(--ok);}
+  .badge.warn{background:rgba(255,180,84,0.15); color:var(--warn);}
+  .badge.bad{background:rgba(255,95,95,0.15); color:var(--bad);}
+  .title{font-size:17px; font-weight:600; margin:10px 0 6px;}
+  .notes{font-size:13px; color:var(--dim); line-height:1.6; white-space:pre-wrap;}
+  .todo{margin-top:10px; font-size:12px; color:var(--warn); border-top:1px dashed var(--border); padding-top:10px;}
+  footer{margin-top:24px; font-size:11px; color:var(--dim); text-align:center;}
+
+  @media (max-width: 600px) {
+    body { padding:16px 12px; }
+    .wrap { padding:0; }
+    header h1 { font-size:20px; }
+    .time { font-size:13px; }
+    .title { font-size:16px; }
+    .notes { font-size:12px; }
+    .badge { font-size:10px; padding:2px 7px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Password Authentication -->
+<div id="authOverlay">
+  <div class="auth-box">
+    <h2>🔒 访问验证</h2>
+    <p>这是我的私人每日计划页面，仅供家人查看。请输入密码继续。</p>
+    <input type="password" id="passwordInput" placeholder="输入密码" autocomplete="off">
+    <button onclick="checkPassword()">解锁</button>
+    <div class="auth-error" id="authError">密码错误，请重试</div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div id="mainContent">
+<div class="wrap">
+  <header>
+    <a class="back-link" href="./index.html">
+      <svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      返回主页
+    </a>
+    <h1>2026-08-28 星期五</h1>
+    <div class="sub">每日战线记录 · 仅供家人查看</div>
+  </header>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--ok)"></span>已闭环</span>
+    <span><span class="dot" style="background:var(--warn)"></span>部分完成/待办</span>
+    <span><span class="dot" style="background:var(--bad)"></span>偏离计划</span>
+  </div>
+
+  <div class="timeline" id="timeline">
+
+    <div class="task warn">
+      <div class="row1">
+        <div class="time">08:00 – 12:00</div>
+        <div class="badges">
+          <span class="badge warn">待总结</span>
+          <span class="badge bad">偏离上午战线（应为 P0 考公）</span>
+        </div>
+      </div>
+      <div class="title">蒋妍妍《生成式人工智能》2026 · 第一讲</div>
+      <div class="notes">听完整讲课程，做了初步笔记，尚未对内容做总结整理。</div>
+      <div class="todo">⏳ 待办：整理/总结第一讲笔记 — 未闭环，别拖成堆积债</div>
+    </div>
+
+    <div class="task ok">
+      <div class="row1">
+        <div class="time">14:28 – 17:28（180分钟）</div>
+        <div class="badges">
+          <span class="badge ok">已完成</span>
+        </div>
+      </div>
+      <div class="title">申论真题实战：2020年新疆公务员录用考试《申论》（县区市及以上卷）</div>
+      <div class="notes">第一套申论卷，严格计时180分钟，一次性写完，不查资料、不中途暂停。
+目的：建立真实分数基准线 + 考试地图（哪里不会、主观题要求输出到什么程度）。
+内部参考分配：读材料审题40min / 小题70min / 大作文60min / 检查10min（不卡死，别让一块吃掉别的）。</div>
+      <div class="todo" style="color:var(--ok); border-color:var(--ok);">✅ <b>关键提醒</b>：申论题做完只是第一步。真正的分水岭在于<b>全方位复盘</b>——对照答案逐题分析思路差距、找出答题盲区、修正表达习惯、优化时间分配。复盘质量决定下一套的进步幅度，千万别以为"做完了"就结束了。</div>
+    </div>
+
+    <div class="task ok">
+      <div class="row1">
+        <div class="time">18:03 – 19:23（80分钟）</div>
+        <div class="badges">
+          <span class="badge ok">已完成</span>
+        </div>
+      </div>
+      <div class="title">运动</div>
+      <div class="notes">体能训练，保持身体状态。</div>
+    </div>
+
+  </div>
+
+  <footer>此页面供家人了解我的日常安排和学习进度</footer>
+</div>
+</div>
+
+<script>
+// Simple password protection - SHA256 hash
+const HASH = 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'; // "123" for demo
+
+async function hashPassword(pwd) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pwd);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkPassword() {
+  const input = document.getElementById('passwordInput');
+  const error = document.getElementById('authError');
+  const pwd = input.value.trim();
+
+  if (!pwd) {
+    error.textContent = '请输入密码';
+    error.classList.add('show');
+    return;
+  }
+
+  const hash = await hashPassword(pwd);
+
+  if (hash === HASH) {
+    document.getElementById('authOverlay').classList.add('hidden');
+    document.getElementById('mainContent').classList.add('show');
+    sessionStorage.setItem('planAuth', 'ok');
+  } else {
+    error.textContent = '密码错误，请重试';
+    error.classList.add('show');
+    input.value = '';
+    input.focus();
+  }
+}
+
+// Check session storage on load
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('planAuth') === 'ok') {
+    document.getElementById('authOverlay').classList.add('hidden');
+    document.getElementById('mainContent').classList.add('show');
+  }
+
+  // Enter key to submit
+  document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') checkPassword();
+  });
+});
+</script>
+
+</body>
+</html>
