@@ -45,7 +45,6 @@
                 subtitleHtml +
                 '<div class="post-card-summary">' + escapeHtml(post.summary) + '</div>' +
                 '<div class="post-card-meta">' +
-                    '<span class="post-card-date">' + escapeHtml(post.date) + '</span>' +
                     '<div class="post-card-tags">' + tagsHtml + '</div>' +
                 '</div>';
 
