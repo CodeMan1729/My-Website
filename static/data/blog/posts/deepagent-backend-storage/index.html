@@ -164,6 +164,24 @@ body {
   border-radius: 4px;
 }
 
+.article-content figure {
+  margin: 24px 0;
+  text-align: center;
+}
+
+.article-content figure img {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(200, 169, 110, 0.2);
+}
+
+.article-content figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
   .article-container {
     padding: 40px 20px 60px;
@@ -198,7 +216,15 @@ body {
 
   <div class="article-content">
     <h3>前言</h3>
+    <figure>
+      <img src="./images/cover.png" alt="Deep Agent 虚拟文件系统封面图">
+    </figure>
     <p>当某次<strong>工具调用的返回结果</strong>超过 <code>20000</code> tokens（注意是 tokens，不是字符数）时，deepagent 不会把这一大段结果直接塞进大模型的上下文，而是会把它写入虚拟文件系统，然后给大模型返回<strong>这段内容在虚拟文件系统中的路径以及前十行预览</strong>，后面大模型如果要看完整内容，则使用内置工具<code>read_file/grep</code>按需读取，避免一次性读大量token，污染大模型的输入。</p>
+
+    <figure>
+      <img src="./images/context-management-flowchart.png" alt="上下文自动管理流程图">
+      <figcaption>上下文自动管理两道防线：大结果自动卸载（&gt;20K tokens）和对话历史自动总结（&gt;85% 窗口），Agent 始终拥有精炼的工作记忆和可回溯的完整记录</figcaption>
+    </figure>
 
     <p>本文不是去探讨 deep agent 如何做拦截，也不是去讨论 deep agent 相关的内置工具，而是讨论 deep agent 主要的虚拟文件系统，它是怎么样去存储这些大文件的。</p>
 
