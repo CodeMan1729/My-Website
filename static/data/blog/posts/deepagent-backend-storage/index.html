@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用实验感受 Deep Agent 的 4 种后端存储形式</title>
+<style>
+:root {
+  --bg-color: #0a1628;
+  --text-color: #e8e0d4;
+  --text-muted: #8a8a9a;
+  --gold-accent: #c8a96e;
+  --code-bg: #16213e;
+  --link-color: #6c9bd6;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1.8;
+  padding: 0;
+  margin: 0;
+}
+
+.back-to-blog {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(200, 169, 110, 0.3);
+  background: rgba(10, 22, 40, 0.8);
+  color: var(--gold-accent);
+  text-decoration: none;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.back-to-blog:hover {
+  background: rgba(26, 58, 92, 0.9);
+  border-color: var(--gold-accent);
+  transform: translateX(-2px);
+}
+
+.back-to-blog svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.article-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 32px 80px;
+}
+
+.article-header {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(200, 169, 110, 0.2);
+}
+
+.article-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--gold-accent);
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+.article-meta {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.article-content {
+  font-size: 16px;
+}
+
+.article-content h3 {
+  font-size: 24px;
+  color: var(--gold-accent);
+  margin: 40px 0 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(200, 169, 110, 0.3);
+}
+
+.article-content p {
+  margin: 16px 0;
+}
+
+.article-content ul, .article-content ol {
+  margin: 16px 0;
+  padding-left: 28px;
+}
+
+.article-content li {
+  margin: 8px 0;
+}
+
+.article-content code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 14px;
+}
+
+.article-content pre {
+  background: var(--code-bg);
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 20px 0;
+  border-left: 3px solid var(--gold-accent);
+}
+
+.article-content pre code {
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.article-content strong {
+  color: var(--gold-accent);
+  font-weight: 600;
+}
+
+.article-content a {
+  color: var(--link-color);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.article-content a:hover {
+  border-bottom-color: var(--link-color);
+}
+
+.note-box {
+  background: rgba(200, 169, 110, 0.1);
+  border-left: 4px solid var(--gold-accent);
+  padding: 16px 20px;
+  margin: 24px 0;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .article-container {
+    padding: 40px 20px 60px;
+  }
+
+  .article-title {
+    font-size: 24px;
+  }
+
+  .article-content h3 {
+    font-size: 20px;
+  }
+
+  .article-content {
+    font-size: 15px;
+  }
+}
+</style>
+</head>
+<body>
+
+<a class="back-to-blog" href="../../../../blog.html">
+  <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+  Back
+</a>
+
+<article class="article-container">
+  <header class="article-header">
+    <h1 class="article-title">用实验感受 Deep Agent 的 4 种后端存储形式</h1>
+    <div class="article-meta">2026-08-27</div>
+  </header>
+
+  <div class="article-content">
+    <h3>前言</h3>
+    <p>当某次<strong>工具调用的返回结果</strong>超过 <code>20000</code> tokens（注意是 tokens，不是字符数）时，deepagent 不会把这一大段结果直接塞进大模型的上下文，而是会把它写入虚拟文件系统，然后给大模型返回<strong>这段内容在虚拟文件系统中的路径以及前十行预览</strong>，后面大模型如果要看完整内容，则使用内置工具<code>read_file/grep</code>按需读取，避免一次性读大量token，污染大模型的输入。</p>
+
+    <p>本文不是去探讨 deep agent 如何做拦截，也不是去讨论 deep agent 相关的内置工具，而是讨论 deep agent 主要的虚拟文件系统，它是怎么样去存储这些大文件的。</p>
+
+    <p>文件按照使用需求可以分为：</p>
+    <ul>
+      <li>临时文件</li>
+      <li>需要永久存储的文件</li>
+      <li>需要跨用户跨对话访问的信息（如长期记忆、用户偏好）</li>
+    </ul>
+
+    <p>这就分别对应了 deepagent 的 4 种后端文件存储：</p>
+    <ul>
+      <li><code>StateBackend</code>：临时文件</li>
+      <li><code>FilesystemBackend</code>：需要永久存储的文件</li>
+      <li><code>StoreBackend</code>：需要跨用户跨对话访问的文件</li>
+      <li><code>CompositeBackend</code>：混合后端，可包含前三种及其定制后端</li>
+    </ul>
+
+    <h3>代码骨架</h3>
+    <p>只讲重点代码，然后给出完整代码框架。</p>
+
+    <p>模拟大文件：</p>
+<pre><code>def big_string() -> str: # 模拟大文件
+    """
+    function: generate a very long string
+    """
+
+    return "Deepagent deepSeek deepHuman deepSpace\n" * 25000</code></pre>
+
+    <p>其中 docstring 是必不可少的，因为大模型将用此来理解这个工具。</p>
+
+    <ul>
+      <li><code>StateBackend</code>，是临时存储，存储在内存中，若关闭此对话，则之前存储的大文件全部消失</li>
+      <li><code>StoreBackend</code>，这可以自由选择，既可以使用<code>InMemoryStore</code>在内存中存，和<code>StateBackend</code>一样，也可以使用定制的存储方式，比如 redis, pgsql 等等。<strong>从这也可以看出来 deep agent 设计理念：因为这个后端存储模式应当涵盖更多的业务场景，所以说它必须支持跨对话的存储</strong></li>
+      <li><code>FilesystemBackend</code>，存在磁盘，永久存储</li>
+    </ul>
+
+<pre><code>import os
+from langchain_anthropic import ChatAnthropic
+from deepagents import create_deep_agent
+from deepagents.backends import FilesystemBackend
+from deepagents.backends import CompositeBackend
+from deepagents.backends import StateBackend
+from deepagents.backends import StoreBackend
+from langgraph.store.memory import InMemoryStore
+
+model = ChatAnthropic(
+    model=os.environ.get("MODEL_NAME", "你的模型"),
+    api_key=os.environ["填写你的key"],
+    base_url="填写你的ai网站",
+)
+
+def big_string() -> str: # 模拟大文件
+    """
+    function: generate a very long string
+    """
+
+    return "Deepagent deepSeek deepHuman deepSpace\n" * 25000
+
+backend = CompositeBackend(
+    default=StateBackend(),
+
+    routes={
+        "/scratch/" : StateBackend(),
+
+        "/memories/" : FilesystemBackend(
+            root_dir="./memory",
+            virtual_mode=True,
+        ),
+
+        "/project/" : FilesystemBackend(
+            root_dir="./project",
+            virtual_mode=True,
+        ),
+    }
+)
+
+agent = create_deep_agent(
+    model = model,
+    tools=[big_string],
+    backend=backend,
+    system_prompt="""
+    你有以下几个存储区域：
+
+        /scratch/
+        用于临时推理、中间结果、一次性草稿。
+
+        /memories/
+        用于未来对话仍然值得记住的信息，例如用户偏好、长期规则。
+
+        /project/
+        用于需要真正保存到本地磁盘、以后人工查看或继续编辑的项目文件。
+
+        请根据内容性质自行选择合适的位置。"""
+)
+
+result = agent.invoke(
+    {"messages" : [{"role": "user", "content": "各种不同提示词"}]}
+)
+
+print("\n===== LAST MESSAGE =====")
+
+print(result["messages"][-1].content)</code></pre>
+
+    <h3>感受 StateBackend</h3>
+    <p>添加打印文件路径打印的功能：</p>
+<pre><code>print("\n===== FILE's NAMES =====")
+print(result.get("files",{}).keys())</code></pre>
+
+    <p>提示词：</p>
+<pre><code>{"messages" : [{"role": "user", "content": "读取那个big_string，告诉我，哪些已经存在，哪些名词现在还没有公司，产品等的对应"}]}</code></pre>
+    <p>这时agent就会读取我们之前用函数生成的那个超长字符串。</p>
+
+    <div class="note-box">
+      <p>（原来这里少写了一对括号，<code>.keys</code>没有调用，打印出来的是方法对象本身而不是结果，补上<code>()</code>后才能看到真正的文件路径列表）</p>
+    </div>
+
+    <p><code>StateBackend</code>把文件存在<code>LangGraph</code>的<code>agent state</code>里，随对话线程（thread）保持，关闭这个线程后就消失，不会像<code>FilesystemBackend</code>一样落盘。它挂在 state 上，其实<code>result["files"]</code>本身就能拿到完整的文件内容（不只是文件名），只是这里只打印了<code>keys()</code>，所以看到的只是路径。</p>
+
+    <h3>感受 FilesystemBackend</h3>
+    <p>这是磁盘存储，我们可以看到 agent 写入的内容。我们在我们的运行文件夹下，让 agent 创建一个文件夹并形容合适的内容。</p>
+
+<pre><code>agent = create_deep_agent(
+    model = model,
+    tools=[big_string],
+    backend=FilesystemBackend(
+        root_dir="./test",
+        virtual_mode=True,
+    ),
+)</code></pre>
+
+    <p>filesystemBackend 的结果：test 文件夹下有文件：toolu_bdrk_01GsaQRq7AMSjs7t7ynhMdgH，这个里面确实有 25000 行 Deepagent deepSeek deepHuman deepSpace。</p>
+
+    <h3>感受 StoreBackend</h3>
+    <p>如果使用内存存储的话，它和 StateBackend 在本实验的体感一样，因为本试验并不涉及跨用户跨对话的长期记忆功能/文件访问。</p>
+
+<pre><code>agent = create_deep_agent(
+    model = model,
+    tools=[big_string],
+    backend=StoreBackend(
+        namespace=lambda rt: ("local-test",),
+        store=InMemoryStore(),
+    )
+    # store可单独设置
+)</code></pre>
+
+    <div class="note-box">
+      <p>注意<code>StoreBackend</code>的<code>store</code>参数和<code>backend</code>是分开配置的，这里只是恰好也用了<code>InMemoryStore</code>。<code>store</code>可以换成别的持久化实现（比如接 redis、pgsql），跟<code>backend</code>选哪个类互不影响。</p>
+    </div>
+
+    <h3>感受 CompositeBackend</h3>
+    <p>混合路由：</p>
+<pre><code>backend = CompositeBackend(
+    default=StateBackend(),
+
+    routes={
+        "/scratch/" : StateBackend(),
+
+        "/memories/" : FilesystemBackend(
+            root_dir="./memory",
+            virtual_mode=True,
+        ),
+
+        "/project/" : StoreBackend(
+            namespace=lambda rt : ("local-user",),
+            store=InMemoryStore(),
+        ),
+    }
+)</code></pre>
+
+    <p>提示词：</p>
+<pre><code>请处理下面三条信息，并自行决定分别存到哪里：
+
+1. 我喜欢通过实验来学习技术概念。
+2. 计算一下 12345 × 6789，过程中可以记录中间步骤。
+3. 创建一份 Deep Agents Chapter 3 的实验记录，内容写"第一次虚拟文件系统实验完成"。</code></pre>
+
+    <p>这样子的话你就可以看到 memory 文件夹里面确实被 agent 记录了一些东西。</p>
+
+    <p>下面把<code>project</code>也变成磁盘存储，这样方便我们查看 ai 写的东西。这个代码我没有展示出来，大家自己写，当做一个小练习。</p>
+
+    <h3>感受 agent 自主进行后端路由切换</h3>
+    <p>提示词：</p>
+<pre><code>{"messages" : [{"role": "user", "content": "我今天发现："超过 20,000 tokens 的工具结果可能会被自动卸载到虚拟文件系统。"请你妥善保存这条信息。并且说出你的依据，如果有必要请你创建文件，而不是退而求其次，使用已经存在的文件。并且如果你发现这条信息已经存在，但位置不合适请删除它，并重新安排这条信息"}]}</code></pre>
+
+    <p>然后去看 agent 到底是把这条信息怎么处理，挺有意思的。</p>
+
+    <p><strong>实验小结：</strong>我发现 deep agent 给我们搭建了大量的工具，用上面这段话，它可以自动地去帮你把原本的文件删除，重新再创建一个 markdown 文件。deep agent 给我们搭建了我们感受不到的文件删除，创建和写入系统，这是我第一次真真实实的感觉到 deep agent 给我们搭建 agent 带来的方便之处，它把很多的基础设施都写好了。不然我上面这条提示词写完以后，agent 并不能帮我删除，我还得自己手写如何让 agent 去删除或者是创建文件的相关工具，重复造轮子。</p>
+  </div>
+</article>
+
+</body>
+</html>

@@ -1,6 +1,15 @@
 {
   "posts": [
     {
+      "id": "deepagent-backend-storage",
+      "title": "用实验感受 Deep Agent 的 4 种后端存储形式",
+      "subtitle": "StateBackend、FilesystemBackend、StoreBackend、CompositeBackend 实战对比",
+      "date": "2026-08-27",
+      "summary": "用代码真实感受 Deep Agent 四种后端存储的区别：临时存储 vs 磁盘持久化 vs 跨会话存储，以及如何让 agent 自己判断该把文件存到哪个路由。",
+      "tags": ["Deep Agent", "LangChain", "实验"],
+      "folder": "posts/deepagent-backend-storage"
+    },
+    {
       "id": "python-decorator-lab",
       "title": "亲眼看见 Python 装饰器在动",
       "subtitle": "名字、函数对象、闭包与字典的引用关系可视化",
