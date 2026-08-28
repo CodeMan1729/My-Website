@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>每日计划 - Xiyao Guo</title>
+<title>每日计划 - 2026-08-28</title>
 <link rel="icon" href="favicon.ico">
 <style>
   :root{
@@ -32,8 +32,7 @@
     border-radius:16px; padding:32px 28px; max-width:360px; width:90%;
     box-shadow:0 8px 32px rgba(0,0,0,0.4);
   }
-  .auth-box h2 { margin:0 0 8px; font-size:22px; text-align:center; }
-  .auth-box p { color:var(--dim); font-size:14px; margin:0 0 24px; text-align:center; line-height:1.5; }
+  .auth-box h2 { margin:0 0 24px; font-size:22px; text-align:center; }
   .auth-box input {
     width:100%; padding:12px 14px; font-size:15px;
     background:var(--bg); border:1px solid var(--border);
@@ -87,6 +86,7 @@
   }
   .task.ok::before{background:var(--ok);}
   .task.warn::before{background:var(--warn);}
+  .task.active::before{background:#4da3ff; box-shadow:0 0 0 4px rgba(77,163,255,0.2);}
   .row1{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
   .time{font-size:14px; font-weight:600; color:var(--dim); letter-spacing:0.5px;}
   .badges{display:flex; gap:6px; flex-wrap:wrap;}
@@ -94,6 +94,7 @@
   .badge.ok{background:rgba(61,220,132,0.15); color:var(--ok);}
   .badge.warn{background:rgba(255,180,84,0.15); color:var(--warn);}
   .badge.bad{background:rgba(255,95,95,0.15); color:var(--bad);}
+  .badge.active{background:rgba(77,163,255,0.15); color:#4da3ff;}
   .title{font-size:17px; font-weight:600; margin:10px 0 6px;}
   .notes{font-size:13px; color:var(--dim); line-height:1.6; white-space:pre-wrap;}
   .todo{margin-top:10px; font-size:12px; color:var(--warn); border-top:1px dashed var(--border); padding-top:10px;}
@@ -126,20 +127,21 @@
 <div id="mainContent">
 <div class="wrap">
   <header>
-    <a class="back-link" href="./index.html">
+    <a class="back-link" href="./plan.html">
       <svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor">
         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
       </svg>
-      返回主页
+      返回计划列表
     </a>
     <h1>2026-08-28 星期五</h1>
-    <div class="sub">每日战线记录 · 仅供家人查看</div>
+    <div class="sub">每日战线记录</div>
   </header>
 
   <div class="legend">
     <span><span class="dot" style="background:var(--ok)"></span>已闭环</span>
     <span><span class="dot" style="background:var(--warn)"></span>部分完成/待办</span>
     <span><span class="dot" style="background:var(--bad)"></span>偏离计划</span>
+    <span><span class="dot" style="background:#4da3ff"></span>进行中</span>
   </div>
 
   <div class="timeline" id="timeline">
@@ -151,24 +153,34 @@
           <span class="badge ok">已完成</span>
         </div>
       </div>
-      <div class="title">考公战略复盘 + 面试题种草</div>
-      <div class="notes">系统反思申论学习方法（之前没接触过，需要建立完整的答题思维框架）；
-发现一道很有价值的面试题，已种草标记，计划后续深入研究并完整作答。
-重点：不是盲目刷题，而是先搞清楚"申论到底在考什么"、"答题的底层逻辑是什么"。</div>
+      <div class="title">蒋炎岩《生成式软件工程》课程学习</div>
+      <div class="notes">完成课程观看并做笔记。
+重点：理解 AI 辅助编程的核心思想、Prompt Engineering 在软件工程中的应用、以及如何利用生成式 AI 提升开发效率。</div>
     </div>
 
     <div class="task ok">
       <div class="row1">
-        <div class="time">14:00 – 18:00</div>
+        <div class="time">14:28 – 17:28（180分钟）</div>
         <div class="badges">
           <span class="badge ok">已完成</span>
         </div>
       </div>
-      <div class="title">Deep Agent 虚拟文件系统实验 + 博客撰写</div>
-      <div class="notes">完成 Deep Agent 虚拟文件系统的实验项目（自主设计）；
-通过代码实践探索 Deep Agent 的 4 种虚拟文件系统实现方式；
-撰写并发布技术博客，记录实验过程、核心发现和技术理解。
-成果：代码实现 + 完整博客文章。</div>
+      <div class="title">申论真题实战：2020年新疆公务员录用考试《申论》（县区市及以上卷）</div>
+      <div class="notes">第一套申论卷，严格计时180分钟，一次性写完，不查资料、不中途暂停。
+目的：建立真实分数基准线 + 考试地图（哪里不会、主观题要求输出到什么程度）。
+内部参考分配：读材料审题40min / 小题70min / 大作文60min / 检查10min（不卡死，别让一块吃掉别的）。</div>
+      <div class="todo" style="color:var(--ok); border-color:var(--ok);">✅ <b>关键提醒</b>：申论题做完只是第一步。真正的分水岭在于<b>全方位复盘</b>——对照答案逐题分析思路差距、找出答题盲区、修正表达习惯、优化时间分配。复盘质量决定下一套的进步幅度，千万别以为"做完了"就结束了。</div>
+    </div>
+
+    <div class="task ok">
+      <div class="row1">
+        <div class="time">18:03 – 19:23（80分钟）</div>
+        <div class="badges">
+          <span class="badge ok">已完成</span>
+        </div>
+      </div>
+      <div class="title">运动</div>
+      <div class="notes">体能训练，保持身体状态。</div>
     </div>
 
   </div>
@@ -207,7 +219,7 @@ async function checkPassword() {
     document.getElementById('mainContent').classList.add('show');
     sessionStorage.setItem('planAuth', 'ok');
   } else {
-    error.textContent = '密码错误，请重试';
+    error.textContent = '密码错误';
     error.classList.add('show');
     input.value = '';
     input.focus();
