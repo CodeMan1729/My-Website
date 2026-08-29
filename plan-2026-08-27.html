@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>每日计划 - Xiyao Guo</title>
+<title>每日计划 - 2026-08-27</title>
 <link rel="icon" href="favicon.ico">
 <style>
   :root{
@@ -18,7 +18,6 @@
     font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
   }
 
-  /* Password overlay */
   #authOverlay {
     position:fixed; inset:0; z-index:9999;
     background:rgba(10,10,20,0.98);
@@ -32,8 +31,7 @@
     border-radius:16px; padding:32px 28px; max-width:360px; width:90%;
     box-shadow:0 8px 32px rgba(0,0,0,0.4);
   }
-  .auth-box h2 { margin:0 0 8px; font-size:22px; text-align:center; }
-  .auth-box p { color:var(--dim); font-size:14px; margin:0 0 24px; text-align:center; line-height:1.5; }
+  .auth-box h2 { margin:0 0 24px; font-size:22px; text-align:center; }
   .auth-box input {
     width:100%; padding:12px 14px; font-size:15px;
     background:var(--bg); border:1px solid var(--border);
@@ -56,7 +54,6 @@
   }
   .auth-error.show { display:block; }
 
-  /* Main content */
   #mainContent { display:none; }
   #mainContent.show { display:block; }
 
@@ -87,6 +84,7 @@
   }
   .task.ok::before{background:var(--ok);}
   .task.warn::before{background:var(--warn);}
+  .task.active::before{background:#4da3ff; box-shadow:0 0 0 4px rgba(77,163,255,0.2);}
   .row1{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
   .time{font-size:14px; font-weight:600; color:var(--dim); letter-spacing:0.5px;}
   .badges{display:flex; gap:6px; flex-wrap:wrap;}
@@ -94,6 +92,7 @@
   .badge.ok{background:rgba(61,220,132,0.15); color:var(--ok);}
   .badge.warn{background:rgba(255,180,84,0.15); color:var(--warn);}
   .badge.bad{background:rgba(255,95,95,0.15); color:var(--bad);}
+  .badge.active{background:rgba(77,163,255,0.15); color:#4da3ff;}
   .title{font-size:17px; font-weight:600; margin:10px 0 6px;}
   .notes{font-size:13px; color:var(--dim); line-height:1.6; white-space:pre-wrap;}
   .todo{margin-top:10px; font-size:12px; color:var(--warn); border-top:1px dashed var(--border); padding-top:10px;}
@@ -112,7 +111,6 @@
 </head>
 <body>
 
-<!-- Password Authentication -->
 <div id="authOverlay">
   <div class="auth-box">
     <h2>🔒</h2>
@@ -122,73 +120,42 @@
   </div>
 </div>
 
-<!-- Main Content -->
 <div id="mainContent">
 <div class="wrap">
   <header>
-    <a class="back-link" href="./index.html">
+    <a class="back-link" href="./plan.html">
       <svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor">
         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
       </svg>
-      返回主页
+      返回计划列表
     </a>
     <h1>2026-08-27 星期四</h1>
-    <div class="sub">每日战线记录 · 仅供家人查看</div>
+    <div class="sub">每日战线记录</div>
   </header>
 
   <div class="legend">
     <span><span class="dot" style="background:var(--ok)"></span>已闭环</span>
     <span><span class="dot" style="background:var(--warn)"></span>部分完成/待办</span>
     <span><span class="dot" style="background:var(--bad)"></span>偏离计划</span>
+    <span><span class="dot" style="background:#4da3ff"></span>进行中</span>
   </div>
 
-  <div class="timeline" id="timeline">
-
-    <div class="task ok">
-      <div class="row1">
-        <div class="time">08:00 – 12:00</div>
-        <div class="badges">
-          <span class="badge ok">已完成</span>
-        </div>
-      </div>
-      <div class="title">考公战略复盘 + 面试题种草</div>
-      <div class="notes">系统反思申论学习方法（之前没接触过，需要建立完整的答题思维框架）；
-发现一道很有价值的面试题，已种草标记，计划后续深入研究并完整作答。
-重点：不是盲目刷题，而是先搞清楚"申论到底在考什么"、"答题的底层逻辑是什么"。</div>
-    </div>
-
-    <div class="task ok">
-      <div class="row1">
-        <div class="time">14:00 – 18:00</div>
-        <div class="badges">
-          <span class="badge ok">已完成</span>
-        </div>
-      </div>
-      <div class="title">Deep Agent 虚拟文件系统实验 + 博客撰写</div>
-      <div class="notes">完成 Deep Agent 虚拟文件系统的实验项目（自主设计）；
-通过代码实践探索 Deep Agent 的 4 种虚拟文件系统实现方式；
-撰写并发布技术博客，记录实验过程、核心发现和技术理解。
-成果：代码实现 + 完整博客文章。</div>
-    </div>
-
-  </div>
+  <div class="timeline" id="timeline"></div>
 
   <footer>此页面供家人了解我的日常安排和学习进度</footer>
 </div>
 </div>
 
-<script>
-// Simple password protection - SHA256 hash
-const HASH = '46d8dae1407acfe9cc3c0bc1c22bbba41000d4f51df51a95fe75220b4ec903c0';
-
-async function hashPassword(pwd) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(pwd);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+<script id="encryptedTimeline" type="application/json">
+{
+  "salt": "qpsGbZ7HkwR8PjNgG/gzxw==",
+  "iv": "l1xoIGd9oRZKL7Yg",
+  "ciphertext": "n2U2gLm+Z2YiHVlgMt+5/+T6igQHE1RGXoJ0AMXZdjNhgWC02rGfv1bD1oT2vd3VRmAMqsLaXvebEvCtktMr5fBt9HuuQ9fiYEnHBdjJlV4Yyi6eUya3aHy3YDgjn+dyYysN1a2yEKZ0H1WZ0csl6ZS1qGJCEE+kU6YneNY1uVglmG+W2wV0Un/uWUy3uxjJRDKlH1R7r1wni+jOQ9t0YdOBkWSGplslN8/2dby2vtdgxuaebyQXv5hdUcVE27hXu1nIgaaAak1bJYeSdYeH9CLFJGkr/OSHzIdxYJjjn8Z4AhmFQQx5kXx6ornRHKTFIApMosKgtaMKzwDgyGt4UB82P+vO1c/rBh4ty7a8LqLGyHTqAW4lhIlyyQ1/Fig7voxKOqog6relJvIK8KZI7dW1edukFYh6GuKzrBVfN7524Hhaw8Fr55ioXcyRsaH5vu14nTGUI7Hn1aFeb2ksayoir+TR8agFzelqVX85Vp0YyOue4GHG0UV0kqRrsnCsZLXFEnyUiR3j1b7lKOCqHlQswjykLL/aX/YZxEUCdDYoFAXONtBuaOFz7LSChJBRbPClfgJa9iRHQq7nipPZx4oenndfUYBSDMfqyvCoDmuZadWqspx8tRehrE7cVkvp8dr2lEO13cqKwBz1TGu0PN0sYvmIjfcGtVz0E0Nv8GHLoBM5BdilePWQduWGfofPWdW7wpRmmiQ5bqhmYljMQXRBazDG3dzfm+Awk//aVjy7Jw9iayaQTV2Oaz3e1JMIImstVt8+47QxV8ZotAdxPbwrXomDx2Iw0hwCtHIOyT1vbEBzvgoMzqTxH7x48INMGkrq6GBh+DuGyeR57tPiOoFmanNM0FwA0dlzuWP4SVukCKIIw1OwyQ/mMk0Y3NnxHVR12YH74Q0WfDxJ3cpCYEvuI+SzvD/uSD4Sja2t67YyTt5l7WUj2aBCuU7XjDZLKFPs59p8SJugHy5GiyOYWCNEf/lOwX2/DYf7FpKXFkQdcQ8smqnAHhL6tOsHiiyyq+IOVr+8LU03EPgzYe55p3hMth9jHMH/+ipEbmnuSmbEaQi50VpKz3hmF69+BcJEhNvgHURwx5gWcgHEUjVWRgJUdhEZPa8Dykm0rToiadLD4rKRC831vWggnIUnqWwp87HACge1zNyfUgbBfPty1cX9o0US7CsUk4wPR4nj8wKLnBAT/qxTqjY5Q+H49Q5wxijGBZG9Wh1cJk0AFji+u33y8NW40Kw6NeODI+YJRJQeGTDVuBCnaYNZwfDsctPUq0uI0087UJXkyPLgu2dWhtxt0iYlRU6+2ZoqxbKv7AcoJeMe/Eqx5R+n3yrvGd8qd90LAQKS5dMylAvoolVl7k7Bs6oBWUKrpKADBgYU/SbdBRJi+/9Vubtb5owf7qW6/T9/GpEvG8E/Pw3hjUUeQZqnj15ID6Bwq6RxlhNzOFOW6xb8uSvkfh47mxI4XZfxwnw68axbKGBJktmXoGfTpVxgApmBvbE3X/ubG9evyzCqK75bKvIQlV8LNQFksPOXh3JdvMN8RymO0V+Al3P8O3j/vf/cYKDNZIMCil/WOyWNdIG1hRqfHJPoHnngrGpgCdk0HHOyzDQ5aMW8vZHcoEj/ju4eCk4YiB6GG2+xgmK2AS1mlaQYKgT+qG2fRLSD3WIpx7wtOHqY"
 }
+</script>
 
+<script src="./static/js/plan-crypto.js"></script>
+<script>
 async function checkPassword() {
   const input = document.getElementById('passwordInput');
   const error = document.getElementById('authError');
@@ -200,28 +167,40 @@ async function checkPassword() {
     return;
   }
 
-  const hash = await hashPassword(pwd);
+  try {
+    const success = await checkPasswordAndDecrypt(
+      pwd,
+      'encryptedTimeline',
+      'timeline',
+      'timeline-2026-08-27'
+    );
 
-  if (hash === HASH) {
-    document.getElementById('authOverlay').classList.add('hidden');
-    document.getElementById('mainContent').classList.add('show');
-    sessionStorage.setItem('planAuth', 'ok');
-  } else {
-    error.textContent = '密码错误，请重试';
+    if (success) {
+      document.getElementById('authOverlay').classList.add('hidden');
+      document.getElementById('mainContent').classList.add('show');
+      sessionStorage.setItem('planAuth', 'ok');
+    } else {
+      error.textContent = '密码错误';
+      error.classList.add('show');
+      input.value = '';
+      input.focus();
+    }
+  } catch (e) {
+    error.textContent = '解密失败: ' + e.message;
     error.classList.add('show');
-    input.value = '';
-    input.focus();
   }
 }
 
-// Check session storage on load
 window.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('planAuth') === 'ok') {
-    document.getElementById('authOverlay').classList.add('hidden');
-    document.getElementById('mainContent').classList.add('show');
+    const cached = sessionStorage.getItem('timeline-2026-08-27');
+    if (cached) {
+      document.getElementById('timeline').innerHTML = cached;
+      document.getElementById('authOverlay').classList.add('hidden');
+      document.getElementById('mainContent').classList.add('show');
+    }
   }
 
-  // Enter key to submit
   document.getElementById('passwordInput').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') checkPassword();
   });

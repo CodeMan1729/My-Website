@@ -18,7 +18,6 @@
     font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
   }
 
-  /* Password overlay */
   #authOverlay {
     position:fixed; inset:0; z-index:9999;
     background:rgba(10,10,20,0.98);
@@ -55,7 +54,6 @@
   }
   .auth-error.show { display:block; }
 
-  /* Main content */
   #mainContent { display:none; }
   #mainContent.show { display:block; }
 
@@ -108,7 +106,6 @@
 </head>
 <body>
 
-<!-- Password Authentication -->
 <div id="authOverlay">
   <div class="auth-box">
     <h2>🔒</h2>
@@ -118,7 +115,6 @@
   </div>
 </div>
 
-<!-- Main Content -->
 <div id="mainContent">
 <div class="wrap">
   <header>
@@ -132,34 +128,22 @@
     <div class="sub">记录每天的学习和工作安排</div>
   </header>
 
-  <div class="plan-list">
-    <a class="plan-item" href="./plan-2026-08-28.html">
-      <div class="plan-date">2026-08-28 星期五</div>
-      <div class="plan-summary">生成式软件工程课程 · 申论真题实战 · 运动</div>
-    </a>
-
-    <a class="plan-item" href="./plan-2026-08-27.html">
-      <div class="plan-date">2026-08-27 星期四</div>
-      <div class="plan-summary">考公战略复盘 · Deep Agent 虚拟文件系统实验</div>
-    </a>
-  </div>
+  <div class="plan-list" id="planList"></div>
 
   <footer>此页面供家人了解我的日常安排和学习进度</footer>
 </div>
 </div>
 
-<script>
-// Simple password protection - SHA256 hash
-const HASH = '46d8dae1407acfe9cc3c0bc1c22bbba41000d4f51df51a95fe75220b4ec903c0';
-
-async function hashPassword(pwd) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(pwd);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+<script id="encryptedPlanList" type="application/json">
+{
+  "salt": "QeKAMZV0YMyPy7Q9UHmcIg==",
+  "iv": "BjlsH9Okp4eeM61N",
+  "ciphertext": "/BfKV9RawDgbdhJIeLKZwVRz56DNGfSawUwGhhBkmPraHbNpc+b/WVF3k4m6w8Oz72DJBMrPcop5nyM7P3vorOk2QvF3MgZhpCLpzNne33X52OGtWapyxfXHXdfPEZQ7b8MF8mlGNY0MVvx3p/N/Lc80e7II3jS5/Mm43zahBwVAvpm8EdFpE843dpnYuYGmqGEeS8Flw4lQqqt0nvSr9Kxi23v77ir2YSumE4Rra1l6R8IiJufztTjOWHTUrFBMlOjETHvCoTV97idnsdU06wbbRWxbF6jK2KP+4fQtaUVBbX2pqiB7vDtDj6unpLKZxxvUboRYtQpcePaNWDQNvTeyKMD9wdUhYbhEca7Yl7onCUsKQ7CorhOllRykcI3ouhp2+OizTi9iRNUjLW5A/a97XjXRgzz5q3l7/Y7IA+M46Qq8tWqEJC2Pabf7yLrwRyaL7CYpckU1VdZ1+bnHCbPn3JPnS+8VTT+OKXkA6XD3cGXfsfCxYkp4pDbBLNJgZgJY/N7NH+E3fP0TnNdTXe0p8bueAOSY8MLOqo1rc6heT8zut3GkNb1HRqJ3V26h+GgmqzeZgIengToT0KKLfZaqdt9hI9tauQxfMyRti2z5a9iqQ7zkGat0wYdjAc1a9h/MbZoc47leZ9sDu01IRm/OJoqeVrt/++D+jAaYd0ps0emWpFZqfycLb3xNqkVyUF/SnxfHNElDGZFknTvIWxIUBcWa1EzaFUQN7di7Oe1UXJ00kVnDQX3/chbwVj1u1YiV8jDwJ8hxcobGPmXCW+0oVw/Xq4775LIulvWRHZeDYSawNw2tAEeHuLkw8pFZvM4tTxnzeM41DWZdrOXCC6A3QjJnKPhmDJOfyrE4RdPM1jWDctJp0emOSSz39CHAYso7oKvfcAeufKKYtFFCqOhSMMvOCMTNtbycJ0zU+Mg+k+byU91VPrQHNY0+k241DC/8We8c"
 }
+</script>
 
+<script src="./static/js/plan-crypto.js"></script>
+<script>
 async function checkPassword() {
   const input = document.getElementById('passwordInput');
   const error = document.getElementById('authError');
@@ -171,28 +155,40 @@ async function checkPassword() {
     return;
   }
 
-  const hash = await hashPassword(pwd);
+  try {
+    const success = await checkPasswordAndDecrypt(
+      pwd,
+      'encryptedPlanList',
+      'planList',
+      'planListCache'
+    );
 
-  if (hash === HASH) {
-    document.getElementById('authOverlay').classList.add('hidden');
-    document.getElementById('mainContent').classList.add('show');
-    sessionStorage.setItem('planAuth', 'ok');
-  } else {
-    error.textContent = '密码错误';
+    if (success) {
+      document.getElementById('authOverlay').classList.add('hidden');
+      document.getElementById('mainContent').classList.add('show');
+      sessionStorage.setItem('planAuth', 'ok');
+    } else {
+      error.textContent = '密码错误';
+      error.classList.add('show');
+      input.value = '';
+      input.focus();
+    }
+  } catch (e) {
+    error.textContent = '解密失败: ' + e.message;
     error.classList.add('show');
-    input.value = '';
-    input.focus();
   }
 }
 
-// Check session storage on load
 window.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('planAuth') === 'ok') {
-    document.getElementById('authOverlay').classList.add('hidden');
-    document.getElementById('mainContent').classList.add('show');
+    const cached = sessionStorage.getItem('planListCache');
+    if (cached) {
+      document.getElementById('planList').innerHTML = cached;
+      document.getElementById('authOverlay').classList.add('hidden');
+      document.getElementById('mainContent').classList.add('show');
+    }
   }
 
-  // Enter key to submit
   document.getElementById('passwordInput').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') checkPassword();
   });
