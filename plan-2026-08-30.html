@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>每日计划 - Xiyao Guo</title>
+<title>每日计划 - 2026-08-30</title>
 <link rel="icon" href="favicon.ico">
 <style>
   :root{
@@ -57,9 +57,9 @@
   #mainContent { display:none; }
   #mainContent.show { display:block; }
 
-  .wrap{max-width:700px; margin:0 auto;}
+  .wrap{max-width:760px; margin:0 auto;}
   header h1{font-size:24px; margin:0 0 4px;}
-  header .sub{color:var(--dim); font-size:13px; margin-bottom:24px;}
+  header .sub{color:var(--dim); font-size:13px;}
   header .back-link {
     display:inline-flex; align-items:center; gap:4px;
     margin-bottom:16px; padding:6px 12px;
@@ -70,37 +70,42 @@
   }
   header .back-link:hover { background:var(--border); color:var(--text); }
 
-  .plan-list {
-    display:flex; flex-direction:column; gap:12px;
+  .legend{display:flex; gap:16px; margin:16px 0 24px; font-size:12px; color:var(--dim); flex-wrap:wrap;}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .timeline{position:relative; padding-left:16px; border-left:2px solid var(--border);}
+  .task{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:16px 18px; margin-bottom:14px; position:relative;
   }
-
-  .plan-item {
-    display:block; text-decoration:none;
-    background:var(--card); border:1px solid var(--border);
-    border-radius:10px; padding:16px 20px;
-    transition:background 0.2s, border-color 0.2s, transform 0.2s;
-    border-left:3px solid transparent;
+  .task::before{
+    content:""; position:absolute; left:-25px; top:20px;
+    width:10px; height:10px; border-radius:50%; background:var(--dim);
   }
-  .plan-item:hover {
-    background:var(--border); border-left-color:var(--ok);
-    transform:translateX(4px);
-  }
-
-  .plan-date {
-    font-size:18px; font-weight:600; color:var(--text);
-    margin-bottom:6px;
-  }
-  .plan-summary {
-    font-size:13px; color:var(--dim); line-height:1.5;
-  }
-
-  footer{margin-top:32px; font-size:11px; color:var(--dim); text-align:center;}
+  .task.ok::before{background:var(--ok);}
+  .task.warn::before{background:var(--warn);}
+  .task.active::before{background:#4da3ff; box-shadow:0 0 0 4px rgba(77,163,255,0.2);}
+  .row1{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  .time{font-size:14px; font-weight:600; color:var(--dim); letter-spacing:0.5px;}
+  .badges{display:flex; gap:6px; flex-wrap:wrap;}
+  .badge{font-size:11px; padding:3px 9px; border-radius:999px; font-weight:600; white-space:nowrap;}
+  .badge.ok{background:rgba(61,220,132,0.15); color:var(--ok);}
+  .badge.warn{background:rgba(255,180,84,0.15); color:var(--warn);}
+  .badge.bad{background:rgba(255,95,95,0.15); color:var(--bad);}
+  .badge.active{background:rgba(77,163,255,0.15); color:#4da3ff;}
+  .title{font-size:17px; font-weight:600; margin:10px 0 6px;}
+  .notes{font-size:13px; color:var(--dim); line-height:1.6; white-space:pre-wrap;}
+  .todo{margin-top:10px; font-size:12px; color:var(--warn); border-top:1px dashed var(--border); padding-top:10px;}
+  footer{margin-top:24px; font-size:11px; color:var(--dim); text-align:center;}
 
   @media (max-width: 600px) {
     body { padding:16px 12px; }
+    .wrap { padding:0; }
     header h1 { font-size:20px; }
-    .plan-date { font-size:16px; }
-    .plan-summary { font-size:12px; }
+    .time { font-size:13px; }
+    .title { font-size:16px; }
+    .notes { font-size:12px; }
+    .badge { font-size:10px; padding:2px 7px; }
   }
 </style>
 </head>
@@ -118,27 +123,34 @@
 <div id="mainContent">
 <div class="wrap">
   <header>
-    <a class="back-link" href="./index.html">
+    <a class="back-link" href="./plan.html">
       <svg viewBox="0 0 24 24" width="16" height="16" style="fill:currentColor">
         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
       </svg>
-      返回主页
+      返回计划列表
     </a>
-    <h1>每日计划</h1>
-    <div class="sub">记录每天的学习和工作安排</div>
+    <h1>2026-08-30 星期日</h1>
+    <div class="sub">每日战线记录</div>
   </header>
 
-  <div class="plan-list" id="planList"></div>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--ok)"></span>已闭环</span>
+    <span><span class="dot" style="background:var(--warn)"></span>部分完成/待办</span>
+    <span><span class="dot" style="background:var(--bad)"></span>偏离计划</span>
+    <span><span class="dot" style="background:#4da3ff"></span>进行中</span>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
 
   <footer>此页面供家人了解我的日常安排和学习进度</footer>
 </div>
 </div>
 
-<script id="encryptedPlanList" type="application/json">
+<script id="encryptedTimeline" type="application/json">
 {
-  "salt": "0yzdUmqKx/qmgBEMOJabhg==",
-  "iv": "wjSc075YuJ99ugzJ",
-  "ciphertext": "gJHb5iFH3rITW008Ua6oofgJgpDCHCVccVEtkjBXOm+gS2fmvgpHGwmxLBpG0qK5kyHgcieN5ZJzSTWdBS5OuuzDahOfhLLVOrmI2QU+y0jZQVIHe9S+8oEKOCWAS6bDQ1I909PQt3EWUgVL6dsNXQEbjBy+SpKWiWpQ3wegJz6NRvT844XbazW/uzPQ/o6vWttDOy9tkkOt8+Tt3Z4EuN2dxClSA52Ip9oM0vp1+MF02XxeHHZK7d0Kv1FGm3au8xrA9wivZMOuvlYmm7MAy7FHuwv6+qfMMGc8+YscC5lXmcqp28reMpj2J6IcBgza5e3wuXrd70PFwzN0ueLZBMtAbCry3Z630y1ar0uRlvK5Svhx9sRCtbKPuDhxdp7QnwHGKW19Ojw2C0q1kWHA6pk3kGJC/kXgF18iePnq0h1mQrl7qLnlKH2COfbmjQ5B2DXOUrDTv2MHl+X0AOwrX5DEILBE4PmJiVPqkyC1dM+iSjXxemc9+yOqOWu6O7Zk/Tfo83dNsSdYfCDys83H8emecyEyJNk0p6YpHclGiQ2f3TZvPm2qkXn/IyZ7xAfIRcc3g1Y31vdK7mCirut5p//kIdf4MQLbvYKeR1jjyob+nlHKzWouRJ9KE/fBa0C2ZWfMHPcX9JJExPwyJUP1kHkU69LrdbQt8HqxlhNCkC795jOhR+15xGOb+SrMu9R79lkZqs3Ff4V6C3oPvM9JU0MX28NTsPYBzZMdglaaMJa1r8XrpAYXpqr4vKGxhKq1lX6HqLh9JJzgA2OVr6gyd3GYZNvkyL3Diu2EYuXp7GksCwqHB3OjF8ivXomGowhQ1PwSsS9mRtHpma2H874egSPFQ/ZTbSPMCXZz/E+78oyza+e6ZgoO79lKkiNqolu6qQcoRopUulTb19T+5gA5+xLq80IxFKPDht72QJsPYs8F7hDqX/pa6JQ7IBtOv2S4iOkAXQLeIrhtOoXpYWsYLBqeN5ELzL6ozubleXaKgizp9MhUKZj6KKCrQioC8V588XYrrJv0b0QO8lMqxFsdRCaEdWduDhOqHhdbXLtZ09gg/F1W2h5D5FSmBfnO3EKJQUauxCXYYIUM27QhX3lnx2+0pygwGv2IKUNGkdlhWEOgkq/TQU5Y4xIX6u8ZSV4wKFwyta8sc8t6mvAONyf93QuQLIPOQ1DKwbciCL8Cpi/XISxixIrpAt5Hg5Bbii8MkzelYVdgaJOQiHshER7yaAmy5WsJcEXYZH0/Gb7wjV9OPLbs6SZtHFro8kA="
+  "salt": "a8Fn2Om9lxRZbxIPwUS54Q==",
+  "iv": "OlYhunv2FwPwLILE",
+  "ciphertext": "RaA5jwG9PdXNWoEgx/nen49nGORchEpaNmL8gcjYeo9xoMEbwPf5MyX8ULOnSt+KIbEJnolIfFFzhMphQQJGKsnXed1a7lUOorMR929HjyTImq969OLVZ0VRhHpotsX0j4vb0e5h7drEIPZ3UNP0QUOqAUQ1QF6m3aAn3rQfLVB65XIxkcn+v2JRTd9BkYD2YOuNGdtrbhyg6pKd8UTkQRXTUj9JILMVWNOWBhblSrevazfwqoCacnXqwwCBR9wvhMP4YS5YDA2XJjP2ivTjakrfwmfbAjLOgAVmX2QqvoXsaqw9HDr3wRCt2zvBDZ04/NnwmBK+hlwbaYjuh1VRgY7yyIuUOxxQi2lZowNKASxVGWWm1DoNAWDo5OzcTVWLvRFfom8hdVcj1qfIa1+7sZZxPml/mZyHbJmqRBBKhZtM6w8RCAm9J68XDCM9q+PApJ4l65SGHf8Wf2Sahs531mDnVUyHOC8M1N7nmIQFVPu55GBIimFaRRYei0sIcTYlSGC6vtgSr52Gnbt5NQd46HlH2EWkse/jfz23xGkyMmK9rrGTbzKS+Z/o32Y6g21L6cJ0vtKKcpHLAOWGwSbHqBbNOY5K1kXMaodEQRd/f3ZyU4b2JNbDaM0JbpmPlglq/wxMSHWr24dqPD1z71rFTyvah+tDQMEFinLYdmqlZWjn7yWDDnRQsZVVADw+jTrTeYwN9nKWz5dmzwYIX9UJFB8oiyxsr+h1oKu1xWqaSERt0sGQxdCTDTz8eMXoMC9fNnkks1cWoWGYJf9QZXd/HgqClYiu3zmDxHCepb/k3moMHwb815/b9OHKbKvO2Y+tqsFOHgOtQj3hGaGHtzwKHFyVNxQTuJIhpg=="
 }
 </script>
 
@@ -158,9 +170,9 @@ async function checkPassword() {
   try {
     const success = await checkPasswordAndDecrypt(
       pwd,
-      'encryptedPlanList',
-      'planList',
-      'planListCache'
+      'encryptedTimeline',
+      'timeline',
+      'timeline-2026-08-30'
     );
 
     if (success) {
@@ -181,9 +193,9 @@ async function checkPassword() {
 
 window.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('planAuth') === 'ok') {
-    const cached = sessionStorage.getItem('planListCache');
+    const cached = sessionStorage.getItem('timeline-2026-08-30');
     if (cached) {
-      document.getElementById('planList').innerHTML = cached;
+      document.getElementById('timeline').innerHTML = cached;
       document.getElementById('authOverlay').classList.add('hidden');
       document.getElementById('mainContent').classList.add('show');
     }
